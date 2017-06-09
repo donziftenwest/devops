@@ -1,5 +1,7 @@
-By default, only certain metrics cover EC2 instances (host based metrics). However, at times we may want to monitor certain aspects of our operating system. EC2 provides scripts that we can install on the system to achieve this. In this lesson we are going to learn how to configure those scripts and ensure our EC2 instances have permissions to communicate with Amazon CloudWatch to put the metrics data into CloudWatch.
-Commands used in this lesson:
+By default, only certain metrics cover EC2 instances (host based metrics). 
+However, at times we may want to monitor certain aspects of our operating system. 
+EC2 provides scripts that we can install on the system to achieve this. 
+Commands used:
 sudo yum install perl-Switch perl-DateTime perl-Sys-Syslog perl-LWP-Protocol-https
 curl http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip -O
 unzip CloudWatchMonitoringScripts-1.2.1.zip
