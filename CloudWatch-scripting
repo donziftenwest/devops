@@ -1,0 +1,35 @@
+AWS cloudwatch mon-scripts for linux
+  http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/mon-scripts.html
+pre-requisites:
+Configure IAM role using AWS console:
+I then associated policy ( policygen-201706061702GrantPermissionEC2Cloudwatch ) to role named: EC2accessCloudwatch
+Now we associate the profile with the EC2-instance
+aws ec2 associate-iam-instance-profile --instance-id i-123456789abcde123 --iam-instance-profile Name=admin-role
+Role description Allows EC2 instances to call AWS services on your behalf.
+
+List of commands to be executed on each instance in order to send metrics to cloudwatch:
+sudo yum install perl-Switch perl-DateTime perl-Sys-Syslog perl-LWP-Protocol-https perl-Digest-SHA -y
+sudo yum install zip unzip
+curl http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip -O
+unzip CloudWatchMonitoringScripts-1.2.1.zip
+rm CloudWatchMonitoringScripts-1.2.1.zip
+cd aws-scripts-mon
+crontab -e 
+*/5 * * * * /root/aws-scripts-mon/mon-put-instance-data.pl --mem-avail --swap-util --swap-used --mem-util --disk-space-util --disk-space-avail --disk-path=/ --from-cron
+
+Now we work on saltstack state files since goal is to deploy to minions in automated fashion
+
+In order to identify targets, we set a grain on each
+salt "*node000*" grains.setval role vertica
+
+Now we can identify targets using a grain
+
+Final command to deploy state to minions:
+salt –G ‘role:vertica’ state.apply perlpack saltenv=dwest
+
+TESTING:
+Start with one instance
+salt 'staging1-node0003' state.apply perlpack test=True saltenv=dwest
+
+salt.state file did not complete as expected so ran using cmd.run
+salt 'staging1-node0003' cmd.run 'echo "*/5 * * * * /root/aws-scripts-mon/mon-put-instance-data.pl --mem-avail --swap-util --swap-used --mem-util --disk-space-util --disk-space-avail --disk-path=/ --from-cron" | crontab'
