@@ -33,3 +33,14 @@ salt 'staging1-node0003' state.apply perlpack test=True saltenv=dwest
 
 salt.state file did not complete as expected so ran using cmd.run
 salt 'staging1-node0003' cmd.run 'echo "*/5 * * * * /root/aws-scripts-mon/mon-put-instance-data.pl --mem-avail --swap-util --swap-used --mem-util --disk-space-util --disk-space-avail --disk-path=/ --from-cron" | crontab'
+FINAL iteration:
+aws ec2 describe-instances --filters "Name=tag-value,Values=prod1-node0001"
+
+copy InstanceID and use in next command
+
+aws ec2 associate-iam-instance-profile --instance-id i-abcd1234 --iam-instance-profile Name=EC2accessCloudwatch
+
+Apply SaltState to target:
+salt 'prod1-node0002' state.apply perlpack saltenv=dwest
+
+Check for any errors, correct and then look for new metrics under CloudWatch > Metrics > "Linux System"
